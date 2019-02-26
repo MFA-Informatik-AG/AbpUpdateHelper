@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AbpUpdateHelper": {
+      "commandName": "Project",
+      "commandLineArgs": "coreMvc -z \"cwadmin\" -n \"C:\\Users\\schneana\\Downloads\\cwadmin_661\\cwadmin\\src\\cwadmin.Web.Mvc\" -c \"C:\\Users\\schneana\\Downloads\\cwadmin_650\\cwadmin\\src\\cwadmin.Web.Mvc\" -p \"C:\\Users\\schneana\\Documents\\Visual Studio 2017\\Projects\\cwadmin\\src\\cwadmin.Web.Mvc\" -o \"C:\\temp\""
+    }
+  }
+}
