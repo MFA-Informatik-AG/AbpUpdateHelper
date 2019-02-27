@@ -3,7 +3,7 @@ using System.IO;
 
 namespace AbpUpdateHelper
 {
-    public abstract class ExternalMergeAction : MergeActionBase, IMergeAction
+    public abstract class ExternalMergeActionBase : MergeActionBase, IMergeAction
     {
         public void Run(FileGroup fileGroup, string destinationFolder)
         {

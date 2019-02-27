@@ -6,7 +6,7 @@ using AbpUpdateHelper.Services;
 
 namespace AbpUpdateHelper
 {
-    public class CodeCompareMergeAction : ExternalMergeAction
+    public class CodeCompareMergeAction : ExternalMergeActionBase
     {
         protected override void RunComparer(FileGroup fileGroup, string destinationPath)
         {

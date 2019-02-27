@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using AbpUpdateHelper.Services;
 
@@ -15,12 +15,17 @@ namespace AbpUpdateHelper
             _fileActions = fileActions;
         }
 
-        public void UpdateAbpVersion(string abpProjectName, string pathToNewAbpVersion, string pathToCurrentAbpVersion, string pathToProject, string pathToOutputFolder)
+        public void UpdateAbpVersion(string abpProjectName, string pathToNewAbpVersion, string pathToCurrentAbpVersion, string pathToProject, string pathToOutputFolder, bool skipExistingOutputFiles)
         {
             var fileGroups = CreateFileGroups(abpProjectName, pathToNewAbpVersion, pathToCurrentAbpVersion, pathToProject);
 
             foreach (var fileGroup in fileGroups)
             {
+                if (skipExistingOutputFiles && fileGroup.OutputFileExisis(pathToOutputFolder))
+                {
+                    continue;
+                }
+
                 var fileAction = _fileActions.Single(pr => pr.Match(fileGroup));
 
                 fileAction.Run(fileGroup, pathToOutputFolder);

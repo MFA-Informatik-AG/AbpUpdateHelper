@@ -77,5 +77,10 @@ namespace AbpUpdateHelper.Services
         {
             return Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
         }
+
+        public static string GetUserLocalAppDataPath()
+        {
+            return Environment.ExpandEnvironmentVariables("%LOCALAPPDATA%");
+        }
     }
 }

@@ -52,6 +52,10 @@ namespace AbpUpdateHelper
                     "Output folder with the updated files",
                     CommandOptionType.SingleValue);
 
+                var skipExistingOutputFilesOption = command.Option("-s|--skipexisting",
+                    "Existing files in the output folder are not overwritten",
+                    CommandOptionType.NoValue);
+
                 command.OnExecute(() =>
                 {
                     if (!abpProjectNameOption.HasValue()
@@ -71,9 +75,11 @@ namespace AbpUpdateHelper
                     var abpCurrentVersionDirectory = abpCurrentVersionDirectoryOption.Value();
                     var projectDirectory = projectDirectoryOption.Value();
                     var outputDirectory = outputDirectoryOption.Value();
+                    var skipExistingOutputFiles = skipExistingOutputFilesOption.HasValue();
 
                     var mergeActions = new List<IMergeAction>
                     {
+                        new SmartMergeMergeAction(),
                         new CodeCompareMergeAction(),
                         new WinMergeAction()
                     };
@@ -89,7 +95,7 @@ namespace AbpUpdateHelper
 
                     var controller = new AbpUpdateController(fileActions);
 
-                    controller.UpdateAbpVersion(abpProjectName, abpNewVersionDirectory, abpCurrentVersionDirectory, projectDirectory, outputDirectory);
+                    controller.UpdateAbpVersion(abpProjectName, abpNewVersionDirectory, abpCurrentVersionDirectory, projectDirectory, outputDirectory, skipExistingOutputFiles);
 
                     return 0;
                 });
