@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using AbpUpdateHelper.Services;
 
@@ -28,9 +29,20 @@ namespace AbpUpdateHelper
 
         private IEnumerable<FileGroup> CreateFileGroups(string abpProjectName, string pathToNewAbpVersion, string pathToCurrentAbpVersion, string pathToProject)
         {
-            var newAbpVersionFiles = AbpFileHelper.ReadAbpFiles(pathToNewAbpVersion, abpProjectName);
-            var currentAbpVersionFiles = AbpFileHelper.ReadAbpFiles(pathToCurrentAbpVersion, abpProjectName);
-            var projectFiles = AbpFileHelper.ReadAbpFiles(pathToProject, abpProjectName);
+            var filterDirectories = new List<string>
+            {
+                @"\\bin",
+                @"\\obj"
+            };
+
+            var filterFiles = new List<string>
+            {
+
+            };
+
+            var newAbpVersionFiles = AbpFileHelper.ReadAbpFiles(pathToNewAbpVersion, abpProjectName, filterDirectories, filterFiles);
+            var currentAbpVersionFiles = AbpFileHelper.ReadAbpFiles(pathToCurrentAbpVersion, abpProjectName, filterDirectories, filterFiles);
+            var projectFiles = AbpFileHelper.ReadAbpFiles(pathToProject, abpProjectName, filterDirectories, filterFiles);
 
             var fileGroups = new Dictionary<string, FileGroup>();
 

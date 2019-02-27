@@ -32,11 +32,11 @@ namespace AbpUpdateHelper
         {
             var diffPatch = new diff_match_patch();
 
-            var diff = diffPatch.diff_main(fileGroup.NewAbpFile.FileContent, fileGroup.CurrentAbpFile.FileContent, false);
+            var diff = diffPatch.diff_main(fileGroup.NewAbpFile.FileContent, fileGroup.ProjectFile.FileContent, false);
 
             diffPatch.diff_cleanupSemantic(diff);
 
-            var patchList = diffPatch.patch_make(fileGroup.NewAbpFile.FileContent, fileGroup.CurrentAbpFile.FileContent, diff);
+            var patchList = diffPatch.patch_make(fileGroup.NewAbpFile.FileContent, fileGroup.ProjectFile.FileContent, diff);
 
             var results = diffPatch.patch_apply(patchList, fileGroup.ProjectFile.FileContent);
 
