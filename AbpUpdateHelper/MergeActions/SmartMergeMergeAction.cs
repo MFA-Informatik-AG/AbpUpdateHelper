@@ -34,7 +34,6 @@ namespace AbpUpdateHelper
             return new Tuple<bool, string>(File.Exists(semanticMergePath), semanticMergePath);
         }
 
-
         public override bool Match(FileGroup fileGroup)
         {
             if (!GetSmartMergeFile().Item1)
