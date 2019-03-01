@@ -37,12 +37,15 @@ namespace AbpUpdateHelper
             var filterDirectories = new List<string>
             {
                 @"\\bin",
-                @"\\obj"
+                @"\\obj",
+                @"\\node_modules",
+                @"\\jcrop\\src",
             };
 
             var filterFiles = new List<string>
             {
-
+                "package-lock.json",
+                "yarn.lock"
             };
 
             var newAbpVersionFiles = AbpFileHelper.ReadAbpFiles(pathToNewAbpVersion, abpProjectName, filterDirectories, filterFiles);

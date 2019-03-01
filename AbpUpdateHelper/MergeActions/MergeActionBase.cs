@@ -19,8 +19,7 @@ namespace AbpUpdateHelper
                 ".ttf",
                 ".woff",
                 ".woff2",
-                ".ico",
-                ".lock"
+                ".ico"
             };
 
             var fileExtension = fileGroup.ProjectFile.File.Extension.ToLower();

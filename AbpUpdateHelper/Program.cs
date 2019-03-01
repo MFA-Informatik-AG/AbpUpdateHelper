@@ -97,6 +97,18 @@ namespace AbpUpdateHelper
 
                     controller.UpdateAbpVersion(abpProjectName, abpNewVersionDirectory, abpCurrentVersionDirectory, projectDirectory, outputDirectory, skipExistingOutputFiles);
 
+                    Console.WriteLine("Manual post update actions:");
+                    Console.WriteLine(" -Check that the environment is up-to-date (VS, yarn, etc.)");
+                    Console.WriteLine(" -Delete node_modules folder");
+                    Console.WriteLine(" -Delete wwwroot\\lib folder");
+                    Console.WriteLine(" -Delete wwwroot\\assets\\jcrop\\src folder");
+                    Console.WriteLine(" -Run donet restore in the .web.mvc folder");
+                    Console.WriteLine(" -Run yarn install and yarn upgrade in the .web.mvc folder");
+                    Console.WriteLine(" -Update the netcore version in the projects if/where required (don't forget the test projects)");
+                    Console.WriteLine(" -Update the nuget packages");
+                    Console.WriteLine(" -Double-check missing dependencies and update the package.json file accordingly");
+                    Console.WriteLine(" -Run the Database Migration tool");
+
                     return 0;
                 });
             });
