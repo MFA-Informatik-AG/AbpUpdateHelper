@@ -10,13 +10,18 @@ namespace AbpUpdateHelper
     {
         protected override void RunComparer(FileGroup fileGroup, string destinationPath)
         {
-            var winMerge = new Process();
+            var merge = new Process
+            {
+                StartInfo =
+                {
+                    FileName = GetWinMergeFile().Item2,
+                    Arguments = $" /e \"{fileGroup.NewAbpFile.File.FullName}\" \"{destinationPath}\""
+                }
+            };
 
-            winMerge.StartInfo.FileName = GetWinMergeFile().Item2;
-            winMerge.StartInfo.Arguments = $" /e \"{fileGroup.NewAbpFile.File.FullName}\" \"{destinationPath}\"";
-            winMerge.Start();
+            merge.Start();
 
-            winMerge.WaitForExit();
+            merge.WaitForExit();
         }
 
         private Tuple<bool, string> GetWinMergeFile()

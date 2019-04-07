@@ -102,8 +102,11 @@ namespace AbpUpdateHelper
                     Console.WriteLine(" -Delete node_modules folder");
                     Console.WriteLine(" -Delete wwwroot\\lib folder");
                     Console.WriteLine(" -Delete wwwroot\\assets\\jcrop\\src folder");
+                    Console.WriteLine(" -Delete package-lock.json");
+                    Console.WriteLine(" -Delete yarn.lock");
                     Console.WriteLine(" -Run donet restore in the .web.mvc folder");
-                    Console.WriteLine(" -Run yarn install and yarn upgrade in the .web.mvc folder");
+                    Console.WriteLine(" -Run yarn in the .web.mvc folder");
+					Console.WriteLine(" -Run npm run create-bundles in the web.mvc folder");
                     Console.WriteLine(" -Update the netcore version in the projects if/where required (don't forget the test projects)");
                     Console.WriteLine(" -Update the nuget packages");
                     Console.WriteLine(" -Double-check missing dependencies and update the package.json file accordingly");

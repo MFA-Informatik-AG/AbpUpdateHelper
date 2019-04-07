@@ -10,20 +10,25 @@ namespace AbpUpdateHelper
         protected override void RunComparer(FileGroup fileGroup, string destinationPath)
         {
 
-            var winMerge = new Process();
-
-            winMerge.StartInfo.FileName = GetSmartMergeFile().Item2;
-            winMerge.StartInfo.Arguments = $" -s \"{fileGroup.NewAbpFile.File.FullName}\" -d \"{fileGroup.ProjectFile.File.FullName}\" -b \"{fileGroup.CurrentAbpFile.File.FullName}\" -r \"{destinationPath}\" --automatic --silent --nolangwarn";
-            winMerge.Start();
-
-            winMerge.WaitForExit();
-
-            if (winMerge.ExitCode != 0)
+            var merge = new Process
             {
-                winMerge.StartInfo.Arguments = $" -s \"{fileGroup.NewAbpFile.File.FullName}\" -d \"{fileGroup.ProjectFile.File.FullName}\" -b \"{fileGroup.CurrentAbpFile.File.FullName}\" -r \"{destinationPath}\" --automatic --nolangwarn";
-                winMerge.Start();
+                StartInfo =
+                {
+                    FileName = GetSmartMergeFile().Item2,
+                    Arguments = $" -s \"{fileGroup.NewAbpFile.File.FullName}\" -d \"{fileGroup.ProjectFile.File.FullName}\" -b \"{fileGroup.CurrentAbpFile.File.FullName}\" -r \"{destinationPath}\" --automatic --silent --nolangwarn"
+                }
+            };
 
-                winMerge.WaitForExit();
+            merge.Start();
+
+            merge.WaitForExit();
+
+            if (merge.ExitCode != 0)
+            {
+                merge.StartInfo.Arguments = $" -s \"{fileGroup.NewAbpFile.File.FullName}\" -d \"{fileGroup.ProjectFile.File.FullName}\" -b \"{fileGroup.CurrentAbpFile.File.FullName}\" -r \"{destinationPath}\" --automatic --nolangwarn";
+                merge.Start();
+
+                merge.WaitForExit();
             }
         }
 
