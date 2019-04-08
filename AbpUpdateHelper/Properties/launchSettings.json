@@ -2,7 +2,7 @@
   "profiles": {
     "AbpUpdateHelper": {
       "commandName": "Project",
-      "commandLineArgs": "coreMvc -s -z \"cwadmin\" -n \"C:\\Users\\schneana\\Downloads\\cwadmin_670\\cwadmin\\src\" -c \"C:\\Users\\schneana\\Downloads\\cwadmin_650\\cwadmin\\src\" -p \"C:\\Users\\schneana\\Documents\\Visual Studio 2017\\Projects\\cwadmin\\src\" -o \"C:\\temp\""
+      "commandLineArgs": "coreMvc -s -z \"cwadmin\" -n \"C:\\Users\\schneana\\Downloads\\cwadmin_691\\cwadmin\\src\" -c \"C:\\Users\\schneana\\Downloads\\cwadmin_670\\cwadmin\\src\" -p \"C:\\Users\\schneana\\Documents\\Visual Studio 2017\\Projects\\cwadmin\\src\" -o \"C:\\temp\""
     }
   }
 }
