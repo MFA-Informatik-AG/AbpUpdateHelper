@@ -1,5 +1,4 @@
-﻿using System.IO;
-using AbpUpdateHelper.Services;
+﻿using AbpUpdateHelper.Services;
 
 namespace AbpUpdateHelper.FileGroupActions
 {
@@ -7,17 +6,7 @@ namespace AbpUpdateHelper.FileGroupActions
     {
         public void Run(FileGroup fileGroup, string destinationFolder)
         {
-            var destination = Path.Combine(destinationFolder, fileGroup.NewAbpFile.RelativeDirectory);
-
-            if (!Directory.Exists(destination))
-            {
-                Directory.CreateDirectory(destination);
-            }
-
-            var destinationFileName = destination + "\\" + fileGroup.NewAbpFile.File.Name;
-
-            File.Copy(fileGroup.NewAbpFile.File.FullName, destinationFileName, true);
-
+            fileGroup.CopyNewAbpFile(destinationFolder);
         }
 
         public bool Match(FileGroup fileGroup)

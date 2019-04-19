@@ -5,7 +5,7 @@ using AbpUpdateHelper.Services;
 
 namespace AbpUpdateHelper
 {
-    public class SmartMergeMergeAction : ExternalMergeActionBase
+    public class SemanticMergeMergeAction : ExternalMergeActionBase
     {
         protected override void RunComparer(FileGroup fileGroup, string destinationPath)
         {
@@ -15,7 +15,7 @@ namespace AbpUpdateHelper
                 StartInfo =
                 {
                     FileName = GetSmartMergeFile().Item2,
-                    Arguments = $" -s \"{fileGroup.NewAbpFile.File.FullName}\" -d \"{fileGroup.ProjectFile.File.FullName}\" -b \"{fileGroup.CurrentAbpFile.File.FullName}\" -r \"{destinationPath}\" --automatic --silent --nolangwarn"
+                    Arguments = $" -s \"{fileGroup.NewAbpFile.File.FullName}\" -d \"{fileGroup.ProjectFile.File.FullName}\" -b \"{fileGroup.CurrentAbpFile.File.FullName}\" -r \"{destinationPath}\" -a --silent --nolangwarn"
                 }
             };
 
@@ -25,7 +25,7 @@ namespace AbpUpdateHelper
 
             if (merge.ExitCode != 0)
             {
-                merge.StartInfo.Arguments = $" -s \"{fileGroup.NewAbpFile.File.FullName}\" -d \"{fileGroup.ProjectFile.File.FullName}\" -b \"{fileGroup.CurrentAbpFile.File.FullName}\" -r \"{destinationPath}\" --automatic --nolangwarn";
+                merge.StartInfo.Arguments = $" -s \"{fileGroup.NewAbpFile.File.FullName}\" -d \"{fileGroup.ProjectFile.File.FullName}\" -b \"{fileGroup.CurrentAbpFile.File.FullName}\" -r \"{destinationPath}\" -a --nolangwarn";
                 merge.Start();
 
                 merge.WaitForExit();

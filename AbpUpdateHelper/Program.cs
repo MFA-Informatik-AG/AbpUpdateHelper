@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using AbpUpdateHelper.FileGroupActions;
+using AbpUpdateHelper.PostUpdateActions;
 using Microsoft.Extensions.CommandLineUtils;
 
 namespace AbpUpdateHelper
@@ -15,7 +18,7 @@ namespace AbpUpdateHelper
             app.Name = "ASP.NET Zero Update Helper";
             app.Description = "ASP.NET Zero Framework Update Helper";
             app.HelpOption("-?|-h|--help");
-            app.ExtendedHelpText = "The update helper provides (hopefully) some support updating an existing ASP.NET Zero project to a newer version of the framework.";
+            app.ExtendedHelpText = "The update helper provides some support updating an existing ASP.NET Zero project to a newer version of the framework.";
 
             app.VersionOption("-v|--version", () => $"Version {Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion}");
 
@@ -79,7 +82,7 @@ namespace AbpUpdateHelper
 
                     var mergeActions = new List<IMergeAction>
                     {
-                        new SmartMergeMergeAction(),
+                        new SemanticMergeMergeAction(),
                         new CodeCompareMergeAction(),
                         new WinMergeAction()
                     };
@@ -90,27 +93,47 @@ namespace AbpUpdateHelper
                         new FileGroupActionMergeAbpFile(mergeActions),
                         new FileGroupActionProjectFileOnly(),
                         new FileGroupActionRemoveAbpFile(),
-                        new FileGroupActionUpdateAbpFile()
+                        new FileGroupActionUpdateAbpFile(),
+                        new FileGroupActionSkipOldAbpFile()
                     };
 
-                    var controller = new AbpUpdateController(fileActions);
+                    var postUpdateFileGroupActions = new List<IPostUpdateFileGroupAction>
+                    {
+                        new ModifyPackageJson()
+                    };
 
-                    controller.UpdateAbpVersion(abpProjectName, abpNewVersionDirectory, abpCurrentVersionDirectory, projectDirectory, outputDirectory, skipExistingOutputFiles);
+                    var controller = new AbpUpdateController(
+                        fileActions,
+                        postUpdateFileGroupActions
+                        );
+
+                    var copyAllways = new List<string>
+                    {
+                        @"(\.css)",
+                        @"(\.less)",
+                        @"(\\nvs\\)",
+                    };
+
+                    controller.UpdateAbpVersion(
+                        abpProjectName, 
+                        abpNewVersionDirectory, 
+                        abpCurrentVersionDirectory, 
+                        projectDirectory, 
+                        outputDirectory, 
+                        skipExistingOutputFiles,
+                        copyAllways
+                        );
+
+                    CreateAbpUpdateBatch(outputDirectory);
 
                     Console.WriteLine("Manual post update actions:");
                     Console.WriteLine(" -Check that the environment is up-to-date (VS, yarn, etc.)");
-                    Console.WriteLine(" -Delete node_modules folder");
-                    Console.WriteLine(" -Delete wwwroot\\lib folder");
-                    Console.WriteLine(" -Delete wwwroot\\assets\\jcrop\\src folder");
-                    Console.WriteLine(" -Delete package-lock.json");
-                    Console.WriteLine(" -Delete yarn.lock");
-                    Console.WriteLine(" -Run donet restore in the .web.mvc folder");
-                    Console.WriteLine(" -Run yarn in the .web.mvc folder");
-					Console.WriteLine(" -Run npm run create-bundles in the web.mvc folder");
                     Console.WriteLine(" -Update the netcore version in the projects if/where required (don't forget the test projects)");
                     Console.WriteLine(" -Update the nuget packages");
                     Console.WriteLine(" -Double-check missing dependencies and update the package.json file accordingly");
                     Console.WriteLine(" -Run the Database Migration tool");
+                    Console.WriteLine(" -Global npm packages might cause issues (you find them in the AppData\\Roaming folder");
+                    Console.WriteLine(" -Double-check bundling and minifing errors. It might be that charts.js conflicts with 'use strict'");
 
                     return 0;
                 });
@@ -130,6 +153,31 @@ namespace AbpUpdateHelper
             {
                 Console.WriteLine("Unable to execute application: {0}", ex.Message);
             }
+        }
+
+        private static void CreateAbpUpdateBatch(string outputDirectory)
+        {
+            var abpUpdateBatch = new StringBuilder();
+
+            abpUpdateBatch.AppendLine("rd /S /Q node_modules");
+            abpUpdateBatch.AppendLine(@"rd /S /Q wwwroot\lib");
+            abpUpdateBatch.AppendLine(@"rd /S /Q wwwroot\assets\jcrop\src");
+            abpUpdateBatch.AppendLine(@"rd /S /Q wwwroot\view - resources\Areas\App\Views\_Bundles");
+            abpUpdateBatch.AppendLine("del /Q package -lock.json");
+            abpUpdateBatch.AppendLine("del /Q yarn.lock");
+
+            abpUpdateBatch.AppendLine("call dotnet restore");
+                
+            abpUpdateBatch.AppendLine("call yarn add--dev webpack-cli");
+            abpUpdateBatch.AppendLine("call yarn add--dev webpack");
+            abpUpdateBatch.AppendLine("call yarn");
+                
+            abpUpdateBatch.AppendLine("npx webpack --progress--profile--mode = development");
+            abpUpdateBatch.AppendLine("npx webpack --mode = production");
+
+            var batchFile = outputDirectory + "\\abpupdate.bat";
+
+            File.WriteAllText(batchFile, abpUpdateBatch.ToString());
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using AbpUpdateHelper.Services;
 
 namespace AbpUpdateHelper
@@ -9,30 +9,73 @@ namespace AbpUpdateHelper
     public class AbpUpdateController
     {
         private readonly List<IFileGroupAction> _fileActions;
+        private readonly List<IPostUpdateFileGroupAction> _postUpdateFileGroupActions;
 
-        public AbpUpdateController(List<IFileGroupAction> fileActions)
+        public AbpUpdateController(
+            List<IFileGroupAction> fileActions, 
+            List<IPostUpdateFileGroupAction> postUpdateFileGroupActions
+            )
         {
             _fileActions = fileActions;
+            _postUpdateFileGroupActions = postUpdateFileGroupActions;
         }
 
-        public void UpdateAbpVersion(string abpProjectName, string pathToNewAbpVersion, string pathToCurrentAbpVersion, string pathToProject, string pathToOutputFolder, bool skipExistingOutputFiles)
+        public void UpdateAbpVersion(
+            string abpProjectName, 
+            string pathToNewAbpVersion, 
+            string pathToCurrentAbpVersion, 
+            string pathToProject, 
+            string pathToOutputFolder, 
+            bool skipExistingOutputFiles,
+            List<string> copyAllways
+            )
         {
             var fileGroups = CreateFileGroups(abpProjectName, pathToNewAbpVersion, pathToCurrentAbpVersion, pathToProject);
 
             foreach (var fileGroup in fileGroups)
             {
-                if (skipExistingOutputFiles && fileGroup.OutputFileExisis(pathToOutputFolder))
+                try
                 {
-                    continue;
+                    if (skipExistingOutputFiles && fileGroup.OutputFileExists(pathToOutputFolder))
+                    {
+                        continue;
+                    }
+
+                    if (IsInList(fileGroup.NewAbpFile, copyAllways))
+                    {
+                        fileGroup.CopyNewAbpFile(pathToOutputFolder);
+                    }
+
+                    var fileAction = _fileActions.Single(pr => pr.Match(fileGroup));
+
+                    fileAction.Run(fileGroup, pathToOutputFolder);
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
 
-                var fileAction = _fileActions.Single(pr => pr.Match(fileGroup));
-
-                fileAction.Run(fileGroup, pathToOutputFolder);
+                    throw;
+                }
             }
+
+            foreach (var fileGroup in fileGroups)
+            {
+                _postUpdateFileGroupActions.ForEach(pr => pr.Run(fileGroup, pathToOutputFolder));
+            }
+
         }
 
-        private IEnumerable<FileGroup> CreateFileGroups(string abpProjectName, string pathToNewAbpVersion, string pathToCurrentAbpVersion, string pathToProject)
+        private bool IsInList(SingleFile file, IEnumerable<string> copyAllways)
+        {
+            if (file == null)
+            {
+                return false;
+            }
+
+            return copyAllways.Any(pr => Regex.IsMatch(file.File.FullName, pr, RegexOptions.IgnoreCase));
+        }
+
+        private List<FileGroup> CreateFileGroups(string abpProjectName, string pathToNewAbpVersion, string pathToCurrentAbpVersion, string pathToProject)
         {
             var filterDirectories = new List<string>
             {
